@@ -58,6 +58,7 @@ InputStatement::~InputStatement() = default;
 
 void InputStatement::execute(EvalState &state, Program &program) {
     while (true) {
+        std::cout << " ? " << std::flush;
         std::string input;
         if (!getline(std::cin, input)) {
             // EOF
@@ -90,7 +91,6 @@ void InputStatement::execute(EvalState &state, Program &program) {
 
         if (!valid) {
             // Reprompt (BASIC typically shows "?" or similar)
-            // For now, just retry
             continue;
         }
     }
