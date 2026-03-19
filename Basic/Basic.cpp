@@ -19,6 +19,8 @@
 /* Function prototypes */
 
 void processLine(std::string line, Program &program, EvalState &state);
+bool isKeyword(const std::string& token);
+bool isValidVariableName(const std::string& token);
 
 /* Main program */
 
@@ -133,6 +135,9 @@ void processLine(std::string line, Program &program, EvalState &state) {
                         stmt = new RemStatement();
                     } else if (stmtType == "LET") {
                         std::string var = stmtScanner.nextToken();
+                        if (!isValidVariableName(var)) {
+                            error("SYNTAX ERROR");
+                        }
                         stmtScanner.verifyToken("=");
                         Expression* exp = parseExp(stmtScanner);
                         stmt = new LetStatement(exp, var);
@@ -141,6 +146,9 @@ void processLine(std::string line, Program &program, EvalState &state) {
                         stmt = new PrintStatement(exp);
                     } else if (stmtType == "INPUT") {
                         std::string var = stmtScanner.nextToken();
+                        if (!isValidVariableName(var)) {
+                            error("SYNTAX ERROR");
+                        }
                         stmt = new InputStatement(var);
                     } else if (stmtType == "END") {
                         stmt = new EndStatement();
@@ -191,6 +199,9 @@ void processLine(std::string line, Program &program, EvalState &state) {
     } else if (command == "LET") {
         // Immediate LET
         std::string var = scanner.nextToken();
+        if (!isValidVariableName(var)) {
+            error("SYNTAX ERROR");
+        }
         scanner.verifyToken("=");
         Expression* exp = parseExp(scanner);
         LetStatement stmt(exp, var);
@@ -205,6 +216,9 @@ void processLine(std::string line, Program &program, EvalState &state) {
     } else if (command == "INPUT") {
         // Immediate INPUT
         std::string var = scanner.nextToken();
+        if (!isValidVariableName(var)) {
+            error("SYNTAX ERROR");
+        }
         InputStatement stmt(var);
         stmt.execute(state, program);
     } else if (command == "END") {
@@ -218,5 +232,23 @@ void processLine(std::string line, Program &program, EvalState &state) {
     } else {
         error("SYNTAX ERROR");
     }
+}
+
+
+bool isValidVariableName(const std::string& token) {
+    // Check if token is a keyword
+    if (isKeyword(token)) {
+        return false;
+    }
+
+    // Check if token is all alphanumeric
+    for (char c : token) {
+        if (!isalnum(c)) {
+            return false;
+        }
+    }
+
+    // Must have at least one character
+    return !token.empty();
 }
 

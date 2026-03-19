@@ -58,4 +58,6 @@ Expression *readT(TokenScanner &scanner);
 
 int precedence(std::string token);
 
+bool isKeyword(const std::string& token);
+
 #endif

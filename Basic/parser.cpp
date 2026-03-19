@@ -5,6 +5,7 @@
  */
 
 #include "parser.hpp"
+#include <set>
 
 
 /*
@@ -56,7 +57,12 @@ Expression *readE(TokenScanner &scanner, int prec) {
 Expression *readT(TokenScanner &scanner) {
     std::string token = scanner.nextToken();
     TokenType type = scanner.getTokenType(token);
-    if (type == WORD) return new IdentifierExp(token);
+    if (type == WORD) {
+        if (isKeyword(token)) {
+            error("SYNTAX ERROR");
+        }
+        return new IdentifierExp(token);
+    }
     if (type == NUMBER) return new ConstantExp(stringToInteger(token));
     if (token == "-") return new CompoundExp(token, new ConstantExp(0), readE(scanner));
     if (token != "(") error("Illegal term in expression");
@@ -79,4 +85,12 @@ int precedence(std::string token) {
     if (token == "+" || token == "-") return 2;
     if (token == "*" || token == "/") return 3;
     return 0;
+}
+
+bool isKeyword(const std::string& token) {
+    static const std::set<std::string> keywords = {
+        "REM", "LET", "PRINT", "INPUT", "END", "GOTO", "IF", "THEN",
+        "RUN", "LIST", "CLEAR", "QUIT", "HELP"
+    };
+    return keywords.find(token) != keywords.end();
 }
