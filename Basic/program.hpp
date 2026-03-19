@@ -144,9 +144,8 @@ public:
     //todo
 
 private:
-
-    // Fill this in with whatever types and instance variables you need
-    //todo
+    // Map from line number to pair of source line and parsed statement
+    std::map<int, std::pair<std::string, Statement*>> lines;
 };
 
 #endif

@@ -1,0 +1,9 @@
+CMakeFiles/
+CMakeCache.txt
+Makefile
+cmake_install.cmake
+compile_commands.json
+*.o
+code
+score
+test_input.txt

@@ -12,50 +12,96 @@
 
 
 
-Program::Program() = default;
+Program::Program() {
+    // Initialize empty program
+}
 
-Program::~Program() = default;
+Program::~Program() {
+    clear(); // Free all allocated statements
+}
 
 void Program::clear() {
-    // Replace this stub with your own code
-    //todo
+    // Free all allocated statements
+    for (auto& entry : lines) {
+        if (entry.second.second != nullptr) {
+            delete entry.second.second;
+        }
+    }
+    lines.clear();
 }
 
 void Program::addSourceLine(int lineNumber, const std::string &line) {
-    // Replace this stub with your own code
-    //todo
+    auto it = lines.find(lineNumber);
+    if (it != lines.end()) {
+        // Line exists, free the old parsed statement
+        if (it->second.second != nullptr) {
+            delete it->second.second;
+        }
+        it->second.first = line;
+        it->second.second = nullptr;
+    } else {
+        // Insert new line in sorted order (map automatically sorts by key)
+        lines[lineNumber] = std::make_pair(line, nullptr);
+    }
 }
 
 void Program::removeSourceLine(int lineNumber) {
-    // Replace this stub with your own code
-    //todo
+    auto it = lines.find(lineNumber);
+    if (it != lines.end()) {
+        if (it->second.second != nullptr) {
+            delete it->second.second;
+        }
+        lines.erase(it);
+    }
 }
 
 std::string Program::getSourceLine(int lineNumber) {
-    // Replace this stub with your own code
-    //todo
+    auto it = lines.find(lineNumber);
+    if (it != lines.end()) {
+        return it->second.first;
+    }
+    return "";
 }
 
 void Program::setParsedStatement(int lineNumber, Statement *stmt) {
-    // Replace this stub with your own code
-    //todo
+    auto it = lines.find(lineNumber);
+    if (it == lines.end()) {
+        error("setParsedStatement: Line " + integerToString(lineNumber) + " not found");
+    }
+    // Free old statement if exists
+    if (it->second.second != nullptr) {
+        delete it->second.second;
+    }
+    it->second.second = stmt;
 }
 
 //void Program::removeSourceLine(int lineNumber) {
 
 Statement *Program::getParsedStatement(int lineNumber) {
-   // Replace this stub with your own code
-   //todo
+    auto it = lines.find(lineNumber);
+    if (it != lines.end()) {
+        return it->second.second;
+    }
+    return nullptr;
 }
 
 int Program::getFirstLineNumber() {
-    // Replace this stub with your own code
-    //todo
+    if (lines.empty()) {
+        return -1;
+    }
+    return lines.begin()->first;
 }
 
 int Program::getNextLineNumber(int lineNumber) {
-    // Replace this stub with your own code
-    //todo
+    auto it = lines.find(lineNumber);
+    if (it == lines.end()) {
+        error("getNextLineNumber: Line " + integerToString(lineNumber) + " not found");
+    }
+    ++it;
+    if (it == lines.end()) {
+        return -1;
+    }
+    return it->first;
 }
 
 //more func to add
